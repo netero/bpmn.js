@@ -1,5 +1,5 @@
-If you are interesting in drawing your BPMN diagrams, please read bpmn.viewer.js.
-If you want to create or edit your BPMN diagrams, please read bpmn.creator.js.
+If you are interesting in drawing your BPMN diagrams, please read bpmn.viewer.txt.
+If you want to create or edit your BPMN diagrams, please read bpmn.creator.txt.
 
 ===================================================================================================
 
