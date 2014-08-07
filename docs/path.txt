@@ -1,0 +1,13 @@
+Path
+================================
+
+It is an array of id of elements. It describes which elements and wires are closed. 
+
+Example
+================================
+
+path=[
+	1,
+	2,
+	3
+];

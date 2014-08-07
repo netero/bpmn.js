@@ -1,0 +1,69 @@
+bpmn.viewer.js
+=============================
+	Properties:
+	=================
+		diagrams: A JSON array that contains the drawn BPMN diagrams.
+		animationTypes: A JSON array that contains the different types of animations that you could use with the method animPath.
+		elemTypes:	A JSON array that contains the different types of elements that you could use ins your diagrams.
+			0: Event start
+			1: Event normal end
+			2: Event terminate end
+			3: Human task
+			4: Service task
+			5: Gateway normal
+			6: Gateway parallel
+			7: Gateway complex
+		
+	Methods:
+	=================
+
+		draw
+		-------------------------
+			Description
+			---------------------
+
+			Draw the BPMN diagram
+
+			How to use it
+			---------------------
+
+			BPMN.draw(config);
+
+			* config: It is a JSON object, it has the following properties.
+				
+				container: id of the BPMN diagram container.
+				skeleton: It is a JSON Object, for a complete reference read skeleton.txt.
+				path: It is an integer array, for a complete reference read path.txt.
+				allowAnimPath: Boolean property. If it is set to true the user will be able to press a button. The path will be drawn with an animation.
+				paintedPath: Boolean property. If it is set to true the path is drawn immediately.
+		
+		clear
+		-------------------------
+			Description
+			---------------------
+			
+			clear the BPMN content of a container.
+			
+			How to use it
+			---------------------
+			
+			BPMN.clear(container);
+			
+			* container: id of the BPMN diagram container
+		
+		animPath
+		-------------------------
+			Description
+			---------------------
+			
+			Draw the path in a animated way.
+			
+			How to use it
+			---------------------
+			
+			BPMN.animPath(config)
+			
+			* config: It is a JSON object, it has the following properties.
+			
+				type:One of the differents types of animations that are defined in BPMN.animationTypes
+				speed: a number between 1 and 10. 1 is the slower and 10 is the faster speed.

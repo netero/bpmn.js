@@ -1,0 +1,68 @@
+Skeleton
+========================
+
+The skeleton is a JSON object that contains the structure of the 
+BPMN diagram. It contains activities, events, gateways, wires, 
+pools and lanes. It also contains the name of the process.
+
+The big difference between BpmnViewer and BpmnCreator is that 
+BpmnViewer uses the information inside a skeleton and the BpmnCreator 
+generates this information.
+
+The position of an element and breakpoints are in pixels. In the 
+case of elements, their position is the center.
+
+The property "type" of elements is given by BPMN.elemType.
+
+
+Example
+========================
+
+skel1={
+	process:"Hello World",
+	elems:[
+		{
+			id:1,
+			name:"Start",
+			type:0,
+			position:{
+				x:100,
+				y:100
+			}
+		},
+		{
+			id:2,
+			name:"Say Hello World!",
+			type:3,
+			position:{
+				x:200,
+				y:100
+			}
+		},
+		{
+			id:3,
+			name:"End",
+			type:2,
+			position:{
+				x:300,
+				y:100
+			}
+		}
+	],
+	wires:[
+		{
+			start:1,
+			end:2,
+			breakPoints:[
+				{
+					x:130,
+					y:90
+				}
+			]
+		},
+		{
+			start:2,
+			end:3
+		}
+	]
+};
