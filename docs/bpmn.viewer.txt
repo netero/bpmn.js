@@ -3,6 +3,7 @@ bpmn.viewer.js
 	Properties:
 	=================
 		diagrams: A JSON array that contains the drawn BPMN diagrams.
+		errors: An array that contains all possible errors.
 		animationTypes: A JSON array that contains the different types of animations that you could use with the method animPath.
 		elemTypes:	A JSON array that contains the different types of elements that you could use ins your diagrams.
 			0: Event start
@@ -16,7 +17,19 @@ bpmn.viewer.js
 		
 	Methods:
 	=================
-
+		exists
+		-------------------------
+			Description
+			---------------------
+			
+			Returns a positive integer if there is a drawn diagram on the container. Else it returns -1.
+			
+			How to use it
+			---------------------
+			
+			BPMN.exists(container)
+			
+			* container: id of the BPMN diagram container.
 		draw
 		-------------------------
 			Description
@@ -32,10 +45,19 @@ bpmn.viewer.js
 			* config: It is a JSON object, it has the following properties.
 				
 				container: id of the BPMN diagram container.
+				width: Integer property. It is the width of container in pixels. If it is not set, the width will be 100% of page.
+				height: Integer property. It is the height of container in pixels. If it is not set, the height will be 100% of page.
 				skeleton: It is a JSON Object, for a complete reference read skeleton.txt.
 				path: It is an integer array, for a complete reference read path.txt.
 				allowAnimPath: Boolean property. If it is set to true the user will be able to press a button. The path will be drawn with an animation.
-				paintedPath: Boolean property. If it is set to true the path is drawn immediately.
+				showPaintedPath: Boolean property. If it is set to true the path is drawn immediately.
+				showProcessDescription: Boolean property. If it is set to true a description of the process will appear in the diagram.
+				showLogo: Boolean property. If it set to true the Logo will appear in the diagram. If the logo property is not set the logo of BPMNJS will appear
+				logo: It is a JSON object. the properties are:
+					url: String property. URL of the logo image.
+					width: Integer property.
+					height: Integer property.
+				curvedCorner: Boolean property. If it set to true the corners of wires will be curved.
 		
 		clear
 		-------------------------
@@ -49,7 +71,7 @@ bpmn.viewer.js
 			
 			BPMN.clear(container);
 			
-			* container: id of the BPMN diagram container
+			* container: id of the BPMN diagram container.
 		
 		animPath
 		-------------------------
@@ -65,5 +87,5 @@ bpmn.viewer.js
 			
 			* config: It is a JSON object, it has the following properties.
 			
-				type:One of the differents types of animations that are defined in BPMN.animationTypes
+				type:One of the differents types of animations that are defined in BPMN.animationTypes.
 				speed: a number between 1 and 10. 1 is the slower and 10 is the faster speed.

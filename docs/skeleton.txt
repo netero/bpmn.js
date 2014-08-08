@@ -9,6 +9,8 @@ The big difference between BpmnViewer and BpmnCreator is that
 BpmnViewer uses the information inside a skeleton and the BpmnCreator 
 generates this information.
 
+The width and height properties are integers, and both are a quantity of pixels.
+
 The position of an element and breakpoints are in pixels. In the 
 case of elements, their position is the center.
 
@@ -20,6 +22,8 @@ Example
 
 skel1={
 	process:"Hello World",
+	width:1920,
+	height:1080,
 	elems:[
 		{
 			id:1,
