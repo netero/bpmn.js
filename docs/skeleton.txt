@@ -24,6 +24,9 @@ skel1={
 	process:"Hello World",
 	width:1920,
 	height:1080,
+	style:{
+		containerBackground:"#86A5DE",
+	},
 	elems:[
 		{
 			id:1,

@@ -37,9 +37,38 @@ BPMN={
 		if(config.skeleton.height==null) throw new Error(this.errors["skeletonNullHeight"]);
 		
 		//starting to draw the diagram
-		if(document.getElementById(config.container)!=null){
+		var elemContainer=document.getElementById(config.container);
+		if(elemContainer!=null){
 			this.clear(config.container);
 			this.diagrams[this.diagrams.length]=config;
+			
+			//setting background of container
+			elemContainer.style.backgroundColor=config.skeleton.style.containerBackground;
+			elemContainer.style.display="block";
+			elemContainer.style.position="absolute";
+			elemContainer.style.overflow="auto";
+			
+			//setting the size of container
+			if(config.width!=null && !isNaN(config.width)){
+				elemContainer.style.width=config.width;
+			}
+			else{
+				elemContainer.style.width= config.skeleton.width;
+			}
+			if(config.height!=null && !isNaN(config.height)){
+				elemContainer.style.height=config.height;
+			}
+			else{
+				elemContainer.style.height=config.skeleton.height;
+			}
+			
+			//setting the stage
+			var stage = new Kinetic.Stage({
+				container: config.container,
+				width: config.skeleton.width,
+				height: config.skeleton.height
+			});
+			
 		}
 		else{
 			throw new Error(this.errors["containerNotExists"].replace("{0}",config.container));
