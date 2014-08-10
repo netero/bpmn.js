@@ -21,12 +21,34 @@ Example
 ========================
 
 skel1={
-	process:"Hello World",
 	width:1920,
 	height:1080,
 	style:{
 		containerBackground:"#86A5DE",
 	},
+	pools:[
+		{
+			name:"Hello world process!!",
+			width:1850,
+			height:950,
+			x:50,
+			y:50
+		}
+	],
+	phases:[
+		{
+			name:"Phase 1",
+			percentWidth:100,
+			pool:0
+		}
+	],
+	lanes:[
+		{
+			role:"Role 1",
+			percentHeight:100,
+			pool:0
+		}
+	],
 	elems:[
 		{
 			id:1,

@@ -45,6 +45,7 @@ bpmn.viewer.js
 			* config: It is a JSON object, it has the following properties.
 				
 				container: id of the BPMN diagram container.
+				editable: Boolean property. If it is set to true then you could edit the diagram.
 				width: Integer property. It is the width of container in pixels. If it is not set, the width will be 100% of page.
 				height: Integer property. It is the height of container in pixels. If it is not set, the height will be 100% of page.
 				skeleton: It is a JSON Object, for a complete reference read skeleton.txt.
@@ -58,6 +59,7 @@ bpmn.viewer.js
 					width: Integer property.
 					height: Integer property.
 				curvedCorner: Boolean property. If it set to true the corners of wires will be curved.
+				textMargin: Number property. It represents the distance between text and the container.
 		
 		clear
 		-------------------------

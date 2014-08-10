@@ -11,13 +11,82 @@
 					container:"bpmnContainer",
 					width:100,
 					height:100,
+					editable:true,
+					textMargin:10,
 					skeleton:{
-						process:"Hello World",
 						width:1920,
 						height:1080,
 						style:{
 							containerBackground:"#86A5DE",
-						}
+						},
+						pools:[
+							{
+								name:"Hello world process!!",
+								width:1850,
+								height:950,
+								x:50,
+								y:50
+							}
+						],
+						phases:[
+							{
+								name:"Phase 1",
+								percentWidth:100,
+								pool:0
+							}
+						],
+						lanes:[
+							{
+								role:"Role 1",
+								percentHeight:100,
+								pool:0
+							}
+						],
+						elems:[
+							{
+								id:1,
+								name:"Start",
+								type:0,
+								position:{
+									x:100,
+									y:100
+								}
+							},
+							{
+								id:2,
+								name:"Say Hello World!",
+								type:3,
+								position:{
+									x:200,
+									y:100
+								}
+							},
+							{
+								id:3,
+								name:"End",
+								type:2,
+								position:{
+									x:300,
+									y:100
+								}
+							}
+						],
+						wires:[
+							{
+								start:1,
+								end:2,
+								breakPoints:[
+									{
+										x:130,
+										y:90
+									}
+								]
+							},
+							{
+								start:2,
+								end:3
+							}
+						]
 					},
 					path:null
 				});

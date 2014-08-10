@@ -32,9 +32,13 @@ BPMN={
 		if(config.skeleton==null)throw new Error(this.errors["configNullSkeleton"]);
 		
 		//validating required elements inside config.skeleton object
-		if(config.skeleton.process==null || config.skeleton.process=="") throw new Error(this.errors["skeletonNullProcess"]);
+		//Must be in the pool - if(config.skeleton.process==null || config.skeleton.process=="") throw new Error(this.errors["skeletonNullProcess"]);
 		if(config.skeleton.width==null) throw new Error(this.errors["skeletonNullWidth"]);
 		if(config.skeleton.height==null) throw new Error(this.errors["skeletonNullHeight"]);
+		
+		//defining default variables
+		if(config.textMargin==null || isNaN(config.textMargin))config.textMargin=7;
+		
 		
 		//starting to draw the diagram
 		var elemContainer=document.getElementById(config.container);
@@ -69,6 +73,64 @@ BPMN={
 				height: config.skeleton.height
 			});
 			
+			//creating layers
+			var poolsLayer=new Kinetic.Layer();
+			var lanesLayer=new Kinetic.Layer();
+			var phasesLayer=new Kinetic.Layer();
+			var elemsLayer=new Kinetic.Layer();
+			var logoLayer=new Kinetic.Layer();
+			var processLayer=new Kinetic.Layer();
+			
+			//creating pools ,pashes and lanes
+			var pools=config.skeleton.pools;
+			for(var i=0;i<pools.length;i++){
+				var pool = new Kinetic.Rect({
+					x:pools[i].x,
+					y:pools[i].y,
+				  width: pools[i].width,
+				  height: pools[i].height,
+				  stroke: 'black',
+				  strokeWidth: 3
+				});
+				
+				/*
+				*	The folowing lines define the pool 
+				*	name and its position
+				*/
+				var poolName=new Kinetic.Text({
+				  text: pools[i].name,
+				  fontSize: 30,
+				  fontFamily: 'Calibri'
+				});
+				poolName=new Kinetic.Text({
+				  x: pools[i].x+config.textMargin,
+				  y:pools[i].y+(pools[i].height+poolName.getWidth())/2,
+				  text: pools[i].name,
+				  fontSize: 30,
+				  fontFamily: 'Calibri',
+				  fill: 'black',
+				  rotation:Math.PI*-1/2
+				});
+				
+				var poolNameRect = new Kinetic.Rect({
+					x:pools[i].x,
+					y:pools[i].y,
+				  width: 2*config.textMargin+poolName.getHeight(),
+				  height: pools[i].height,
+				  stroke: 'black',
+				  strokeWidth: 3
+				});
+				
+				
+				
+				poolsLayer.add(pool);
+				poolsLayer.add(poolName);
+				poolsLayer.add(poolNameRect);
+				
+			}
+			
+			
+			stage.add(poolsLayer);
 		}
 		else{
 			throw new Error(this.errors["containerNotExists"].replace("{0}",config.container));
