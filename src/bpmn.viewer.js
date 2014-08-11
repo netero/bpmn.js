@@ -1,4 +1,5 @@
 BPMN={
+	defaultLogo:"../../logo/ophion.png",
 	diagrams: new Array(),
 	errors:{
 		configNullContainer:"Please provide config.container property",
@@ -40,6 +41,14 @@ BPMN={
 		
 		//defining default variables
 		if(config.textMargin==null || isNaN(config.textMargin))config.textMargin=7;
+		if(config.showLogo==null)config.showLogo=false;
+		if(config.showLogo==true && config.logo==null){
+			config.logo={
+				url:this.defaultLogo,
+				width:185,
+				height:75
+			}
+		}
 		
 		
 		//starting to draw the diagram
@@ -285,6 +294,26 @@ BPMN={
 					elemsLayer.add(group);
 				}
 				
+			}
+			
+			
+			//Drawing logo
+			if(config.showLogo){
+				var imageObj = new Image();
+				imageObj.onload = function() {
+					var image = new Kinetic.Image({
+						x: config.skeleton.width-config.logo.width,
+						y: config.skeleton.height-config.logo.height,
+						image: imageObj,
+						width: config.logo.width,
+						height: config.logo.height
+					});
+					
+					logoLayer.add(image);
+					stage.add(logoLayer);
+					
+				};
+				imageObj.src = config.logo.url;
 			}
 			
 			stage.add(poolsLayer).add(lanesLayer).add(phasesLayer).add(elemsLayer);

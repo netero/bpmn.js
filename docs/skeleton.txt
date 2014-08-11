@@ -79,6 +79,7 @@ skel1={
 	wires:[
 		{
 			id:1,
+			text:null,
 			start:1,
 			end:2,
 			breakPoints:[
@@ -90,6 +91,7 @@ skel1={
 		},
 		{
 			id:2,
+			text:null,
 			start:2,
 			end:3
 		}
