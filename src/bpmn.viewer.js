@@ -294,7 +294,47 @@ BPMN={
 					elemsLayer.add(group);
 				}
 				
+				//Drawing gateways
+				
+				if(elemType.id==5 || elemType.id==6 || elemType.id==7){
+					var gatewaysColor="#cfa569";
+					var squareWidth=22*Math.sqrt(2);
+					var gateway = new Kinetic.Rect({
+						x:elem.position.x-squareWidth/2,
+						y:elem.position.y-squareWidth/2,
+						width: squareWidth,
+						height: squareWidth,
+						fill: gatewaysColor,
+						rotation:Math.PI*1/4
+					});
+					gateway.move({x:squareWidth/2,y:(squareWidth/2)-(squareWidth*Math.sqrt(2)/2)});
+					var gatewayName=new Kinetic.Text({
+						text: elem.name,
+						fontSize: 16,
+						fontFamily: 'Calibri'
+					});
+					gatewayName=new Kinetic.Text({
+						x: elem.position.x-gatewayName.getWidth()/2,
+						y:elem.position.y + 22 +config.textMargin,
+						text: elem.name,
+						fontSize: 16,
+						fontFamily: 'Calibri',
+						fill: 'black'
+					});
+					
+					var group = new Kinetic.Group({
+						draggable:config.editable
+					});
+					group.add(gateway).add(gatewayName);
+					
+					elemsLayer.add(group);
+					
+				}
+				
 			}
+			
+			
+			
 			
 			
 			//Drawing logo
