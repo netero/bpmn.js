@@ -124,40 +124,108 @@ BPMN={
 				var startXPos=poolNameRect.getWidth()+pools[i].x;
 				var startYPos=pools[i].y;
 				var lanes=pools[i].lanes;
+				var laneNameRectWidth=0;
 				for(var j=0;j<lanes.length;j++){
+				
+					var laneHeight=lanes[j].percentHeight*pools[i].height/100;
+				
 					var lane= new Kinetic.Rect({
 						x:startXPos,
 						y:startYPos,
 						width: pools[i].width-poolNameRect.getWidth(),
-						height: lanes[j].percentHeight*pools[i].height/100,
+						height: laneHeight,
 						stroke: 'black',
 						strokeWidth: 3
 					});
+					
+					
 					
 					/*
 					*	The folowing lines define the lane 
 					*	name and its position
 					*/
 					var laneName=new Kinetic.Text({
-					  text: lanes[j].role,
-					  fontSize: 30,
-					  fontFamily: 'Calibri'
+						text: lanes[j].role,
+						fontSize: 30,
+						fontFamily: 'Calibri'
 					});
 					laneName=new Kinetic.Text({
-					  x: startXPos+config.textMargin,
-					  y:startYPos+((lanes[j].percentHeight*pools[i].height/100)+laneName.getWidth())/2,
-					  text: lanes[j].role,
-					  fontSize: 30,
-					  fontFamily: 'Calibri',
-					  fill: 'black',
-					  rotation:Math.PI*-1/2
+						x: startXPos+config.textMargin,
+						y:startYPos+(laneHeight+laneName.getWidth())/2,
+						text: lanes[j].role,
+						fontSize: 30,
+						fontFamily: 'Calibri',
+						fill: 'black',
+						rotation:Math.PI*-1/2
 					});
 					
-					startYPos+=lanes[j].percentHeight*pools[i].height/100;
+					var laneNameRect = new Kinetic.Rect({
+						x:startXPos,
+						y:startYPos,
+						width: 2*config.textMargin+laneName.getHeight(),
+						height: laneHeight,
+						stroke: 'black',
+						strokeWidth: 3
+					});
+					
+					laneNameRectWidth=laneNameRect.getWidth();
+					
+					startYPos+=laneHeight;
 					
 					lanesLayer.add(lane);
 					lanesLayer.add(laneName);
+					lanesLayer.add(laneNameRect);
 				}
+				
+				//update the value of startXPos adding the laneNameRect.width()
+				startXPos+=laneNameRectWidth;
+				startYPos=pools[i].y;
+				
+				var poolLaneNameRectWidth=laneNameRectWidth+poolNameRect.getWidth();
+				
+				//Drawing phases
+				var phases=pools[i].phases;
+				for(var j=0;j<phases.length;j++){
+					
+					var phaseWidth=phases[j].percentWidth*(pools[i].width-poolLaneNameRectWidth)/100;
+					
+					var phase= new Kinetic.Rect({
+						x:startXPos,
+						y:startYPos,
+						width: phaseWidth,
+						height: pools[i].height,
+						stroke: 'black',
+						strokeWidth: 3
+					});
+					
+					
+					
+					/*
+					*	The folowing lines define the phase 
+					*	name and its position
+					*/
+					var phaseName=new Kinetic.Text({
+						text: phases[j].name,
+						fontSize: 30,
+						fontFamily: 'Calibri'
+					});
+					phaseName=new Kinetic.Text({
+						x: startXPos+(phaseWidth-phaseName.getWidth())/2,
+						y:startYPos+config.textMargin,
+						text: phases[j].name,
+						fontSize: 30,
+						fontFamily: 'Calibri',
+						fill: 'black'
+					});
+					
+					startXPos+=phaseWidth;
+					
+					phasesLayer.add(phase);
+					phasesLayer.add(phaseName);
+					
+					
+				}
+				
 				
 				poolsLayer.add(pool);
 				poolsLayer.add(poolName);
@@ -166,7 +234,7 @@ BPMN={
 			}
 			
 			
-			stage.add(poolsLayer).add(lanesLayer);
+			stage.add(poolsLayer).add(lanesLayer).add(phasesLayer);
 		}
 		else{
 			throw new Error(this.errors["containerNotExists"].replace("{0}",config.container));

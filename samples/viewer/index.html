@@ -29,8 +29,11 @@
 								phases:[
 									{
 										name:"Phase 1",
-										percentWidth:100,
-										pool:0
+										percentWidth:25
+									},
+									{
+										name:"Phase 2",
+										percentWidth:75
 									}
 								],
 								lanes:[
@@ -76,6 +79,7 @@
 						],
 						wires:[
 							{
+								id:1,
 								start:1,
 								end:2,
 								breakPoints:[
@@ -86,6 +90,7 @@
 								]
 							},
 							{
+								id:2,
 								start:2,
 								end:3
 							}
