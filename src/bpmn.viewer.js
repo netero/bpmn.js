@@ -121,7 +121,43 @@ BPMN={
 				  strokeWidth: 3
 				});
 				
-				
+				var startXPos=poolNameRect.getWidth()+pools[i].x;
+				var startYPos=pools[i].y;
+				var lanes=pools[i].lanes;
+				for(var j=0;j<lanes.length;j++){
+					var lane= new Kinetic.Rect({
+						x:startXPos,
+						y:startYPos,
+						width: pools[i].width-poolNameRect.getWidth(),
+						height: lanes[j].percentHeight*pools[i].height/100,
+						stroke: 'black',
+						strokeWidth: 3
+					});
+					
+					/*
+					*	The folowing lines define the lane 
+					*	name and its position
+					*/
+					var laneName=new Kinetic.Text({
+					  text: lanes[j].role,
+					  fontSize: 30,
+					  fontFamily: 'Calibri'
+					});
+					laneName=new Kinetic.Text({
+					  x: startXPos+config.textMargin,
+					  y:startYPos+((lanes[j].percentHeight*pools[i].height/100)+laneName.getWidth())/2,
+					  text: lanes[j].role,
+					  fontSize: 30,
+					  fontFamily: 'Calibri',
+					  fill: 'black',
+					  rotation:Math.PI*-1/2
+					});
+					
+					startYPos+=lanes[j].percentHeight*pools[i].height/100;
+					
+					lanesLayer.add(lane);
+					lanesLayer.add(laneName);
+				}
 				
 				poolsLayer.add(pool);
 				poolsLayer.add(poolName);
@@ -130,7 +166,7 @@ BPMN={
 			}
 			
 			
-			stage.add(poolsLayer);
+			stage.add(poolsLayer).add(lanesLayer);
 		}
 		else{
 			throw new Error(this.errors["containerNotExists"].replace("{0}",config.container));
