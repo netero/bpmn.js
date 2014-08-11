@@ -6,7 +6,9 @@ BPMN={
 		skeletonNullProcess:"Please provide skeleton.process property",
 		skeletonNullWidth:"Please provide skeleton.width property",
 		skeletonNullHeight:"Please provide skeleton.height property",
-		containerNotExists:"There is no an element with id: {0} in this page."
+		containerNotExists:"There is no an element with id: {0} in this page.",
+		elemIdNotValid:"Please provide the id of element. Array index: {0}",
+		elemTypeNotValid:"Please provide a valid type for element with id {0}"
 	},
 	elemTypes:[
 		{id:0,name:"Event start"},
@@ -233,8 +235,59 @@ BPMN={
 				
 			}
 			
+			//Drawing elements
 			
-			stage.add(poolsLayer).add(lanesLayer).add(phasesLayer);
+			var elems=config.skeleton.elems;
+			var picsElems= new Array();
+			
+			for(var i =0;i<elems.length;i++){
+				var elem=elems[i];
+				var elemType=this.elemTypes[elem.type];
+				if(elem.id==null || elem.id=="")throw new Error(this.errors["elemIdNotValid"].replace("{0}",i));
+				if(elemType==null)throw new Error(this.errors["elemTypeNotValid"].replace("{0}",elem.id));
+				
+				
+				
+				//Drawing events
+				if(elemType.id==0 || elemType.id==1 || elemType.id==2 ){
+					var fillColor;
+					if(elemType.id==0)fillColor='#169109';
+					else if(elemType.id==1)fillColor='#a76363';
+					else fillColor='#910909';
+					
+					var event = new Kinetic.Circle({
+						x:elem.position.x,
+						y:elem.position.y,
+						radius: 18,
+						fill: fillColor
+					});
+					
+					var eventName=new Kinetic.Text({
+						text: elem.name,
+						fontSize: 16,
+						fontFamily: 'Calibri'
+					});
+					
+					eventName=new Kinetic.Text({
+						x: elem.position.x-eventName.getWidth()/2,
+						y:elem.position.y + 18 +config.textMargin,
+						text: elem.name,
+						fontSize: 16,
+						fontFamily: 'Calibri',
+						fill: 'black'
+					});
+					
+					var group = new Kinetic.Group({
+						draggable:config.editable
+					});
+					group.add(event).add(eventName);
+					
+					elemsLayer.add(group);
+				}
+				
+			}
+			
+			stage.add(poolsLayer).add(lanesLayer).add(phasesLayer).add(elemsLayer);
 		}
 		else{
 			throw new Error(this.errors["containerNotExists"].replace("{0}",config.container));

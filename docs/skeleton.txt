@@ -36,15 +36,13 @@ skel1={
 			phases:[
 				{
 					name:"Phase 1",
-					percentWidth:100,
-					pool:0
+					percentWidth:100
 				}
 			],
 			lanes:[
 				{
 					role:"Role 1",
-					percentHeight:100,
-					pool:0
+					percentHeight:100
 				}
 			]
 		}
