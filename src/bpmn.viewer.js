@@ -325,7 +325,45 @@ BPMN={
 					var group = new Kinetic.Group({
 						draggable:config.editable
 					});
+					
 					group.add(gateway).add(gatewayName);
+					
+					if(elemType.id==6 || elemType.id==7){
+						var line1 = new Kinetic.Line({
+							points: [elem.position.x, elem.position.y-(0.8*squareWidth)/2, elem.position.x, elem.position.y+(0.8*squareWidth)/2],
+							stroke: '#9f7437',
+							strokeWidth:4,
+							lineCap: 'round',
+							lineJoin: 'round'
+						});
+						var line2 = new Kinetic.Line({
+							points: [elem.position.x-(0.8*squareWidth)/2, elem.position.y, elem.position.x+(0.8*squareWidth)/2, elem.position.y],
+							stroke: '#9f7437',
+							strokeWidth:4,
+							lineCap: 'round',
+							lineJoin: 'round'
+						});
+						group.add(line1).add(line2);
+					}
+					
+					if(elemType.id==7){
+						var line3=new Kinetic.Line({
+							points: [elem.position.x-(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.y-(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.x+(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.y+(0.8*squareWidth)*Math.sqrt(2)/4],
+							stroke: '#9f7437',
+							strokeWidth:4,
+							lineCap: 'round',
+							lineJoin: 'round'
+						});
+						var line4=new Kinetic.Line({
+							points: [elem.position.x+(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.y-(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.x-(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.y+(0.8*squareWidth)*Math.sqrt(2)/4],
+							stroke: '#9f7437',
+							strokeWidth:4,
+							lineCap: 'round',
+							lineJoin: 'round'
+						});
+						group.add(line3).add(line4);
+					}
+					
 					
 					elemsLayer.add(group);
 					
