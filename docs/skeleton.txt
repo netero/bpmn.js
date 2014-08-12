@@ -24,7 +24,39 @@ skel1={
 	width:1920,
 	height:1080,
 	style:{
-		containerBackground:"#86A5DE",
+		containerBackground:"#c8d9ff",
+		pool:{
+			fontFamily:"Calibri",
+			fontSize:30,
+			fontColor:"black"
+		},
+		activity:{
+			background:"#5b6bcb",
+			borderWidth:2,
+			borderRadious:5,
+			fontFamily:"Calibri",
+			fontSize:16,
+			fontColor:"black",
+			colorStatus:{
+				closed:"blue",
+				notOpen:"black",
+				open:"green",
+				delayed:"red",
+				expireSoon:"yellow"
+			}
+		},
+		otherElems:{
+			fontFamily:"Calibri",
+			fontSize:16,
+			fontColor:"black",
+			colors:{
+				start:"#169109",
+				normalEnd:"#a76363",
+				terminalEnd:"#910909",
+				gateway:"#cfa569",
+				gatewayLine:"#9f7437"
+			}
+		}
 	},
 	pools:[
 		{

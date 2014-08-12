@@ -9,7 +9,8 @@ BPMN={
 		skeletonNullHeight:"Please provide skeleton.height property",
 		containerNotExists:"There is no an element with id: {0} in this page.",
 		elemIdNotValid:"Please provide the id of element. Array index: {0}",
-		elemTypeNotValid:"Please provide a valid type for element with id {0}"
+		elemTypeNotValid:"Please provide a valid type for element with id {0}",
+		styleNotValid:"Please provide a valid style for skeleton. Read docs/skeleton.txt"
 	},
 	elemTypes:[
 		{id:0,name:"Event start"},
@@ -49,6 +50,37 @@ BPMN={
 				height:75
 			}
 		}
+		//defining default styles
+		var style=config.skeleton.style;
+		if(style==null)style={};
+		if(style.containerBackground==null || style.containerBackground=="")style.containerBackground="#c8d9ff";
+		if(style.pool==null)style.pool={};
+		if(style.pool.fontFamily==null || style.pool.fontFamily=="")style.pool.fontFamily="Calibri";
+		if(style.pool.fontSize==null || isNaN(style.pool.fontSize))style.pool.fontSize=30;
+		if(style.pool.fontColor==null || style.pool.fontColor=="")style.pool.fontColor="black";
+		if(style.activity==null)style.activity={};
+		if(style.activity.background==null || style.activity.background=="")style.activity.background="#5b6bcb";
+		if(style.activity.borderWidth==null || isNaN(style.activity.borderWidth))style.activity.borderWidth=2;
+		if(style.activity.borderRadious==null || isNaN(style.activity.borderRadious))style.activity.borderRadious=5;
+		if(style.activity.fontFamily==null || style.activity.fontFamily=="")style.activity.fontFamily="Calibri";
+		if(style.activity.fontSize==null || isNaN(style.activity.fontSize))style.activity.fontSize=16;
+		if(style.activity.fontColor==null || style.activity.fontColor=="")style.activity.fontColor="black";
+		if(style.activity.colorStatus==null)style.activity.colorStatus={};
+		if(style.activity.colorStatus.closed==null || style.activity.colorStatus.closed=="")style.activity.colorStatus.closed="blue";
+		if(style.activity.colorStatus.notOpen==null || style.activity.colorStatus.notOpen=="")style.activity.colorStatus.notOpen="black";
+		if(style.activity.colorStatus.open==null || style.activity.colorStatus.open=="")style.activity.colorStatus.open="green";
+		if(style.activity.colorStatus.delayed==null || style.activity.colorStatus.delayed=="")style.activity.colorStatus.delayed="red";
+		if(style.activity.colorStatus.expireSoon==null || style.activity.colorStatus.expireSoon=="")style.activity.colorStatus.expireSoon="yellow";
+		if(style.otherElems==null)style.otherElems={};
+		if(style.otherElems.fontFamily==null || style.otherElems.fontFamily=="")style.otherElems.fontFamily="Calibri";
+		if(style.otherElems.fontSize==null || isNaN(style.otherElems.fontSize))style.otherElems.fontSize=16;
+		if(style.otherElems.fontColor==null || style.otherElems.fontColor=="")style.otherElems.fontColor="black";
+		if(style.otherElems.colors==null)style.otherElems.colors={};
+		if(style.otherElems.colors.start==null || style.otherElems.colors.start=="")style.otherElems.colors.start="#169109";
+		if(style.otherElems.colors.normalEnd==null || style.otherElems.colors.normalEnd=="")style.otherElems.colors.normalEnd="#a76363";
+		if(style.otherElems.colors.terminalEnd==null || style.otherElems.colors.terminalEnd=="")style.otherElems.colors.terminalEnd="#910909";
+		if(style.otherElems.colors.gateway==null || style.otherElems.colors.gateway=="")style.otherElems.colors.gateway="#cfa569";
+		if(style.otherElems.colors.gatewayLine==null || style.otherElems.colors.gatewayLine=="")style.otherElems.colors.gatewayLine="#9f7437";
 		
 		
 		//starting to draw the diagram
@@ -58,7 +90,7 @@ BPMN={
 			this.diagrams[this.diagrams.length]=config;
 			
 			//setting background of container
-			elemContainer.style.backgroundColor=config.skeleton.style.containerBackground;
+			elemContainer.style.backgroundColor=style.containerBackground;
 			elemContainer.style.display="block";
 			elemContainer.style.position="absolute";
 			elemContainer.style.overflow="auto";
@@ -100,7 +132,7 @@ BPMN={
 					y:pools[i].y,
 				  width: pools[i].width,
 				  height: pools[i].height,
-				  stroke: 'black',
+				  stroke: style.pool.fontColor,
 				  strokeWidth: 3
 				});
 				
@@ -110,16 +142,16 @@ BPMN={
 				*/
 				var poolName=new Kinetic.Text({
 				  text: pools[i].name,
-				  fontSize: 30,
-				  fontFamily: 'Calibri'
+				  fontSize: style.pool.fontSize,
+				  fontFamily: style.pool.fontFamily
 				});
 				poolName=new Kinetic.Text({
 				  x: pools[i].x+config.textMargin,
 				  y:pools[i].y+(pools[i].height+poolName.getWidth())/2,
 				  text: pools[i].name,
-				  fontSize: 30,
-				  fontFamily: 'Calibri',
-				  fill: 'black',
+				  fontSize: style.pool.fontSize,
+				  fontFamily: style.pool.fontFamily,
+				  fill: style.pool.fontColor,
 				  rotation:Math.PI*-1/2
 				});
 				
@@ -128,7 +160,7 @@ BPMN={
 					y:pools[i].y,
 				  width: 2*config.textMargin+poolName.getHeight(),
 				  height: pools[i].height,
-				  stroke: 'black',
+				  stroke: style.pool.fontColor,
 				  strokeWidth: 3
 				});
 				
@@ -145,7 +177,7 @@ BPMN={
 						y:startYPos,
 						width: pools[i].width-poolNameRect.getWidth(),
 						height: laneHeight,
-						stroke: 'black',
+						stroke: style.pool.fontColor,
 						strokeWidth: 3
 					});
 					
@@ -157,16 +189,16 @@ BPMN={
 					*/
 					var laneName=new Kinetic.Text({
 						text: lanes[j].role,
-						fontSize: 30,
-						fontFamily: 'Calibri'
+						fontSize: style.pool.fontSize,
+						fontFamily: style.pool.fontFamily
 					});
 					laneName=new Kinetic.Text({
 						x: startXPos+config.textMargin,
 						y:startYPos+(laneHeight+laneName.getWidth())/2,
 						text: lanes[j].role,
-						fontSize: 30,
-						fontFamily: 'Calibri',
-						fill: 'black',
+						fontSize: style.pool.fontSize,
+						fontFamily: style.pool.fontFamily,
+						fill: style.pool.fontColor,
 						rotation:Math.PI*-1/2
 					});
 					
@@ -175,7 +207,7 @@ BPMN={
 						y:startYPos,
 						width: 2*config.textMargin+laneName.getHeight(),
 						height: laneHeight,
-						stroke: 'black',
+						stroke: style.pool.fontColor,
 						strokeWidth: 3
 					});
 					
@@ -205,7 +237,7 @@ BPMN={
 						y:startYPos,
 						width: phaseWidth,
 						height: pools[i].height,
-						stroke: 'black',
+						stroke: style.pool.fontColor,
 						strokeWidth: 3
 					});
 					
@@ -217,16 +249,16 @@ BPMN={
 					*/
 					var phaseName=new Kinetic.Text({
 						text: phases[j].name,
-						fontSize: 30,
-						fontFamily: 'Calibri'
+						fontSize: style.pool.fontSize,
+						fontFamily: style.pool.fontFamily
 					});
 					phaseName=new Kinetic.Text({
 						x: startXPos+(phaseWidth-phaseName.getWidth())/2,
 						y:startYPos+config.textMargin,
 						text: phases[j].name,
-						fontSize: 30,
-						fontFamily: 'Calibri',
-						fill: 'black'
+						fontSize: style.pool.fontSize,
+						fontFamily: style.pool.fontFamily,
+						fill: style.pool.fontColor
 					});
 					
 					startXPos+=phaseWidth;
@@ -260,9 +292,9 @@ BPMN={
 				//Drawing events
 				if(elemType.id==0 || elemType.id==1 || elemType.id==2 ){
 					var fillColor;
-					if(elemType.id==0)fillColor='#169109';
-					else if(elemType.id==1)fillColor='#a76363';
-					else fillColor='#910909';
+					if(elemType.id==0)fillColor=style.otherElems.colors.start;
+					else if(elemType.id==1)fillColor=style.otherElems.colors.normalEnd;
+					else fillColor=style.otherElems.colors.terminalEnd;
 					
 					var event = new Kinetic.Circle({
 						x:elem.position.x,
@@ -273,17 +305,17 @@ BPMN={
 					
 					var eventName=new Kinetic.Text({
 						text: elem.name,
-						fontSize: 16,
-						fontFamily: 'Calibri'
+						fontSize: style.otherElems.fontSize,
+						fontFamily: style.otherElems.fontFamily
 					});
 					
 					eventName=new Kinetic.Text({
 						x: elem.position.x-eventName.getWidth()/2,
 						y:elem.position.y + 18 +config.textMargin,
 						text: elem.name,
-						fontSize: 16,
-						fontFamily: 'Calibri',
-						fill: 'black'
+						fontSize: style.otherElems.fontSize,
+						fontFamily: style.otherElems.fontFamily,
+						fill: style.otherElems.fontColor
 					});
 					
 					var group = new Kinetic.Group({
@@ -297,7 +329,7 @@ BPMN={
 				//Drawing gateways
 				
 				if(elemType.id==5 || elemType.id==6 || elemType.id==7){
-					var gatewaysColor="#cfa569";
+					var gatewaysColor=style.otherElems.colors.gateway;
 					var squareWidth=22*Math.sqrt(2);
 					var gateway = new Kinetic.Rect({
 						x:elem.position.x-squareWidth/2,
@@ -310,16 +342,16 @@ BPMN={
 					gateway.move({x:squareWidth/2,y:(squareWidth/2)-(squareWidth*Math.sqrt(2)/2)});
 					var gatewayName=new Kinetic.Text({
 						text: elem.name,
-						fontSize: 16,
-						fontFamily: 'Calibri'
+						fontSize: style.otherElems.fontSize,
+						fontFamily:style.otherElems.fontFamily
 					});
 					gatewayName=new Kinetic.Text({
 						x: elem.position.x-gatewayName.getWidth()/2,
 						y:elem.position.y + 22 +config.textMargin,
 						text: elem.name,
-						fontSize: 16,
-						fontFamily: 'Calibri',
-						fill: 'black'
+						fontSize: style.otherElems.fontSize,
+						fontFamily: style.otherElems.fontFamily,
+						fill: style.otherElems.fontColor
 					});
 					
 					var group = new Kinetic.Group({
@@ -331,14 +363,14 @@ BPMN={
 					if(elemType.id==6 || elemType.id==7){
 						var line1 = new Kinetic.Line({
 							points: [elem.position.x, elem.position.y-(0.8*squareWidth)/2, elem.position.x, elem.position.y+(0.8*squareWidth)/2],
-							stroke: '#9f7437',
+							stroke: style.otherElems.colors.gatewayLine,
 							strokeWidth:4,
 							lineCap: 'round',
 							lineJoin: 'round'
 						});
 						var line2 = new Kinetic.Line({
 							points: [elem.position.x-(0.8*squareWidth)/2, elem.position.y, elem.position.x+(0.8*squareWidth)/2, elem.position.y],
-							stroke: '#9f7437',
+							stroke: style.otherElems.colors.gatewayLine,
 							strokeWidth:4,
 							lineCap: 'round',
 							lineJoin: 'round'
@@ -349,14 +381,14 @@ BPMN={
 					if(elemType.id==7){
 						var line3=new Kinetic.Line({
 							points: [elem.position.x-(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.y-(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.x+(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.y+(0.8*squareWidth)*Math.sqrt(2)/4],
-							stroke: '#9f7437',
+							stroke: style.otherElems.colors.gatewayLine,
 							strokeWidth:4,
 							lineCap: 'round',
 							lineJoin: 'round'
 						});
 						var line4=new Kinetic.Line({
 							points: [elem.position.x+(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.y-(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.x-(0.8*squareWidth)*Math.sqrt(2)/4, elem.position.y+(0.8*squareWidth)*Math.sqrt(2)/4],
-							stroke: '#9f7437',
+							stroke:style.otherElems.colors.gatewayLine,
 							strokeWidth:4,
 							lineCap: 'round',
 							lineJoin: 'round'
@@ -367,6 +399,56 @@ BPMN={
 					
 					elemsLayer.add(group);
 					
+				}
+				
+				//drawing activities
+				if(elemType.id==3 || elemType.id==4){
+					var maxActivityWidth=200;
+					var activityWidth;
+					var tempText=new Kinetic.Text({
+						text: elem.name,
+						fontSize: style.activity.fontSize,
+						fontFamily: style.activity.fontFamily
+					});
+					
+					var group = new Kinetic.Group({
+						draggable:config.editable
+					});
+					
+					if(tempText.getWidth()>0.8*maxActivityWidth)
+					{
+						tempText=new Kinetic.Text({
+							text: elem.name,
+							fontSize: style.activity.fontSize,
+							fontFamily: style.activity.fontFamily,
+							width:0.8*maxActivityWidth
+						});
+					}
+					
+					var activity = new Kinetic.Rect({
+						x:elem.position.x-(5.0*tempText.getWidth()/4.0)/2,
+						y:elem.position.y-(5.0*tempText.getHeight()/3.0)/2,
+						width: (5.0*tempText.getWidth()/4.0),
+						height: (5.0*tempText.getHeight()/3.0),
+						fill: style.activity.background,
+						stroke: style.activity.colorStatus.closed,
+						strokeWidth: style.activity.borderWidth,
+						cornerRadius:style.activity.borderRadious
+					});
+					
+					tempText=new Kinetic.Text({
+						x: elem.position.x-tempText.getWidth()/2,
+						y:elem.position.y-tempText.getHeight()/2,
+						text: elem.name,
+						fontSize: style.activity.fontSize,
+						fontFamily: style.activity.fontFamily,
+						fill: style.activity.fontColor,
+						width:0.8*maxActivityWidth
+					});
+					
+					group.add(activity).add(tempText);
+					
+					elemsLayer.add(group);
 				}
 				
 			}
