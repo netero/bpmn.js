@@ -56,6 +56,16 @@ skel1={
 				gateway:"#cfa569",
 				gatewayLine:"#9f7437"
 			}
+		},
+		wire:{
+			regular:{
+				lineColor:"black",
+				lineWidth:3
+			},
+			closed:{
+				lineColor:"blue",
+				lineWidth:4
+			}
 		}
 	},
 	pools:[

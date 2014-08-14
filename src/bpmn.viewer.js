@@ -81,7 +81,13 @@ BPMN={
 		if(style.otherElems.colors.terminalEnd==null || style.otherElems.colors.terminalEnd=="")style.otherElems.colors.terminalEnd="#910909";
 		if(style.otherElems.colors.gateway==null || style.otherElems.colors.gateway=="")style.otherElems.colors.gateway="#cfa569";
 		if(style.otherElems.colors.gatewayLine==null || style.otherElems.colors.gatewayLine=="")style.otherElems.colors.gatewayLine="#9f7437";
-		
+		if(style.wire==null)style.wire={};
+		if(style.wire.regular==null)style.wire.regular={};
+		if(style.wire.regular.lineColor==null || style.wire.regular.lineColor=="")style.wire.regular.lineColor="black";
+		if(style.wire.regular.lineWidth==null || isNaN(style.wire.regular.lineWidth))style.wire.regular.lineWidth=3;
+		if(style.wire.closed==null)style.wire.closed={};
+		if(style.wire.closed.lineColor==null || style.wire.closed.lineColor=="")style.wire.closed.lineColor="blue";
+		if(style.wire.closed.lineWidth==null || isNaN(style.wire.closed.lineWidth))style.wire.closed.lineWidth=4;
 		
 		//starting to draw the diagram
 		var elemContainer=document.getElementById(config.container);
@@ -121,6 +127,7 @@ BPMN={
 			var lanesLayer=new Kinetic.Layer();
 			var phasesLayer=new Kinetic.Layer();
 			var elemsLayer=new Kinetic.Layer();
+			var wiresLayer=new Kinetic.Layer();
 			var logoLayer=new Kinetic.Layer();
 			var processLayer=new Kinetic.Layer();
 			
@@ -276,6 +283,46 @@ BPMN={
 				
 			}
 			
+			/*
+				Defining function for dragging elements
+			*/
+			var dragmove=function(){
+				config.skeleton.elems[this.i].position.x=this.original.x+this.getX();//+(this.elem.getWidth()/2);
+				config.skeleton.elems[this.i].position.y=this.original.y+this.getY();//+(this.elem.getHeight()/2);
+				//draggableElem.elem.setX(config.skeleton.elems[draggableElem.i].position.x);
+				//draggableElem.elem.setY(config.skeleton.elems[draggableElem.i].position.y);
+				for(var j=0;j<config.skeleton.wires.length;j++){
+					var points=new Array();
+					if(config.skeleton.wires[j].start==config.skeleton.elems[this.i].id){
+						points[points.length]=config.skeleton.elems[this.i].position.x;
+						points[points.length]=config.skeleton.elems[this.i].position.y;
+						for(var k=0;k<config.skeleton.elems.length;k++){
+							if(config.skeleton.elems[k].id==config.skeleton.wires[j].end){
+								points[points.length]=config.skeleton.elems[k].position.x;
+								points[points.length]=config.skeleton.elems[k].position.y;
+							}
+						}
+						
+						config.skeleton.wires[j].line.setPoints(points);
+					}
+					else if(config.skeleton.wires[j].end==config.skeleton.elems[this.i].id){
+						for(var k=0;k<config.skeleton.elems.length;k++){
+							if(config.skeleton.elems[k].id==config.skeleton.wires[j].start){
+								points[points.length]=config.skeleton.elems[k].position.x;
+								points[points.length]=config.skeleton.elems[k].position.y;
+							}
+						}
+						points[points.length]=config.skeleton.elems[this.i].position.x;
+						points[points.length]=config.skeleton.elems[this.i].position.y;
+						config.skeleton.wires[j].line.setPoints(points);
+					}
+					
+					
+				}
+				wiresLayer.draw();
+			};
+			
+			
 			//Drawing elements
 			
 			var elems=config.skeleton.elems;
@@ -322,6 +369,15 @@ BPMN={
 						draggable:config.editable
 					});
 					group.add(event).add(eventName);
+					
+					//prepare dragmove
+					group.original={
+						x:elem.position.x,
+						y:elem.position.y
+					};
+					group.elem=event;
+					group.i=i;
+					group.on("dragmove",dragmove);
 					
 					elemsLayer.add(group);
 				}
@@ -396,10 +452,19 @@ BPMN={
 						group.add(line3).add(line4);
 					}
 					
+					//prepare dragmove
+					group.original={
+						x:elem.position.x,
+						y:elem.position.y
+					};
+					group.elem=gateway;
+					group.i=i;
+					group.on("dragmove",dragmove);
 					
 					elemsLayer.add(group);
 					
 				}
+				
 				
 				//drawing activities
 				if(elemType.id==3 || elemType.id==4){
@@ -431,7 +496,7 @@ BPMN={
 						width: (5.0*tempText.getWidth()/4.0),
 						height: (5.0*tempText.getHeight()/3.0),
 						fill: style.activity.background,
-						stroke: style.activity.colorStatus.closed,
+						stroke: style.activity.colorStatus.notOpen, 
 						strokeWidth: style.activity.borderWidth,
 						cornerRadius:style.activity.borderRadious
 					});
@@ -448,13 +513,87 @@ BPMN={
 					
 					group.add(activity).add(tempText);
 					
+					//prepare dragmove
+					group.original={
+						x:elem.position.x,
+						y:elem.position.y
+					};
+					group.elem=activity;
+					group.i=i;
+					group.on("dragmove",dragmove);
+					
 					elemsLayer.add(group);
 				}
+				
+				
+				/*
+					Defining dragging option for element
+				*/
+				/*if(draggableElem.elem!=null){
+					draggableElem.elem.on('dragmove', function() {
+						
+						config.skeleton.elems[draggableElem.i].position.x=draggableElem.original.x+draggableElem.elem.getX()+(draggableElem.elem.getWidth()/2);
+						config.skeleton.elems[draggableElem.i].position.y=draggableElem.original.y+draggableElem.elem.getY()+(draggableElem.elem.getHeight()/2);
+						//draggableElem.elem.setX(config.skeleton.elems[draggableElem.i].position.x);
+						//draggableElem.elem.setY(config.skeleton.elems[draggableElem.i].position.y);
+						for(var j=0;j<config.skeleton.wires.length;j++){
+							var points=new Array();
+							if(config.skeleton.wires[j].start==config.skeleton.elems[draggableElem.i].id){
+								points[points.length]=config.skeleton.elems[draggableElem.i].position.x;
+								points[points.length]=config.skeleton.elems[draggableElem.i].position.y;
+								for(var k=0;k<config.skeleton.elems.length;k++){
+									if(config.skeleton.elems[k].id==config.skeleton.wires[j].end){
+										points[points.length]=config.skeleton.elems[k].position.x;
+										points[points.length]=config.skeleton.elems[k].position.y;
+									}
+								}
+								
+								config.skeleton.wires[j].line.setPoints(points);
+							}
+							else if(config.skeleton.wires[j].end==config.skeleton.elems[draggableElem.i].id){
+								for(var k=0;k<config.skeleton.elems.length;k++){
+									if(config.skeleton.elems[k].id==config.skeleton.wires[j].start){
+										points[points.length]=config.skeleton.elems[k].position.x;
+										points[points.length]=config.skeleton.elems[k].position.y;
+									}
+								}
+								points[points.length]=config.skeleton.elems[draggableElem.i].position.x;
+								points[points.length]=config.skeleton.elems[draggableElem.i].position.y;
+								config.skeleton.wires[j].line.setPoints(points);
+							}
+							
+							
+						}
+						wiresLayer.draw();
+					});
+				}*/
 				
 			}
 			
 			
-			
+			//drawing wires
+			var wires=config.skeleton.wires;
+			for(var i=0;i<wires.length;i++){
+				var wire=wires[i];
+				var startElem;
+				var endElem;
+				for(var j=0;j<elems.length;j++){
+					if(elems[j].id==wire.start)startElem=elems[j];
+					else if(elems[j].id==wire.end)endElem=elems[j];
+				}
+				
+				
+				var line1 = new Kinetic.Line({
+					points: [startElem.position.x, startElem.position.y, endElem.position.x, endElem.position.y],
+					stroke: style.wire.regular.lineColor,
+					strokeWidth:style.wire.regular.lineWidth,
+					lineCap: 'round',
+					lineJoin: 'round'
+				});
+				config.skeleton.wires[i].line=line1;
+				wiresLayer.add(line1);
+				
+			}
 			
 			
 			//Drawing logo
@@ -468,15 +607,13 @@ BPMN={
 						width: config.logo.width,
 						height: config.logo.height
 					});
-					
 					logoLayer.add(image);
 					stage.add(logoLayer);
-					
 				};
 				imageObj.src = config.logo.url;
 			}
 			
-			stage.add(poolsLayer).add(lanesLayer).add(phasesLayer).add(elemsLayer);
+			stage.add(poolsLayer).add(lanesLayer).add(phasesLayer).add(wiresLayer).add(elemsLayer);
 		}
 		else{
 			throw new Error(this.errors["containerNotExists"].replace("{0}",config.container));
