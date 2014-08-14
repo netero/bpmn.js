@@ -524,50 +524,6 @@ BPMN={
 					
 					elemsLayer.add(group);
 				}
-				
-				
-				/*
-					Defining dragging option for element
-				*/
-				/*if(draggableElem.elem!=null){
-					draggableElem.elem.on('dragmove', function() {
-						
-						config.skeleton.elems[draggableElem.i].position.x=draggableElem.original.x+draggableElem.elem.getX()+(draggableElem.elem.getWidth()/2);
-						config.skeleton.elems[draggableElem.i].position.y=draggableElem.original.y+draggableElem.elem.getY()+(draggableElem.elem.getHeight()/2);
-						//draggableElem.elem.setX(config.skeleton.elems[draggableElem.i].position.x);
-						//draggableElem.elem.setY(config.skeleton.elems[draggableElem.i].position.y);
-						for(var j=0;j<config.skeleton.wires.length;j++){
-							var points=new Array();
-							if(config.skeleton.wires[j].start==config.skeleton.elems[draggableElem.i].id){
-								points[points.length]=config.skeleton.elems[draggableElem.i].position.x;
-								points[points.length]=config.skeleton.elems[draggableElem.i].position.y;
-								for(var k=0;k<config.skeleton.elems.length;k++){
-									if(config.skeleton.elems[k].id==config.skeleton.wires[j].end){
-										points[points.length]=config.skeleton.elems[k].position.x;
-										points[points.length]=config.skeleton.elems[k].position.y;
-									}
-								}
-								
-								config.skeleton.wires[j].line.setPoints(points);
-							}
-							else if(config.skeleton.wires[j].end==config.skeleton.elems[draggableElem.i].id){
-								for(var k=0;k<config.skeleton.elems.length;k++){
-									if(config.skeleton.elems[k].id==config.skeleton.wires[j].start){
-										points[points.length]=config.skeleton.elems[k].position.x;
-										points[points.length]=config.skeleton.elems[k].position.y;
-									}
-								}
-								points[points.length]=config.skeleton.elems[draggableElem.i].position.x;
-								points[points.length]=config.skeleton.elems[draggableElem.i].position.y;
-								config.skeleton.wires[j].line.setPoints(points);
-							}
-							
-							
-						}
-						wiresLayer.draw();
-					});
-				}*/
-				
 			}
 			
 			
