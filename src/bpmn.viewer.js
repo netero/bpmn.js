@@ -88,6 +88,9 @@ BPMN={
 		if(style.wire.closed==null)style.wire.closed={};
 		if(style.wire.closed.lineColor==null || style.wire.closed.lineColor=="")style.wire.closed.lineColor="blue";
 		if(style.wire.closed.lineWidth==null || isNaN(style.wire.closed.lineWidth))style.wire.closed.lineWidth=4;
+		if(style.drag==null)style.drag={};
+		if(style.drag.lineColor==null || style.drag.lineColor=="")style.drag.lineColor="#115682";
+		if(style.drag.lineWidth==null || isNaN(style.drag.lineWidth))style.drag.lineWidth=5;
 		
 		//starting to draw the diagram
 		var elemContainer=document.getElementById(config.container);
@@ -128,6 +131,7 @@ BPMN={
 			var phasesLayer=new Kinetic.Layer();
 			var elemsLayer=new Kinetic.Layer();
 			var wiresLayer=new Kinetic.Layer();
+			var breakPointsLayer= new Kinetic.Layer();
 			var logoLayer=new Kinetic.Layer();
 			var processLayer=new Kinetic.Layer();
 			
@@ -287,42 +291,112 @@ BPMN={
 				Defining function for dragging elements
 			*/
 			var dragmove=function(){
-				config.skeleton.elems[this.i].position.x=this.original.x+this.getX();//+(this.elem.getWidth()/2);
-				config.skeleton.elems[this.i].position.y=this.original.y+this.getY();//+(this.elem.getHeight()/2);
-				//draggableElem.elem.setX(config.skeleton.elems[draggableElem.i].position.x);
-				//draggableElem.elem.setY(config.skeleton.elems[draggableElem.i].position.y);
-				for(var j=0;j<config.skeleton.wires.length;j++){
-					var points=new Array();
-					if(config.skeleton.wires[j].start==config.skeleton.elems[this.i].id){
-						points[points.length]=config.skeleton.elems[this.i].position.x;
-						points[points.length]=config.skeleton.elems[this.i].position.y;
-						for(var k=0;k<config.skeleton.elems.length;k++){
-							if(config.skeleton.elems[k].id==config.skeleton.wires[j].end){
-								points[points.length]=config.skeleton.elems[k].position.x;
-								points[points.length]=config.skeleton.elems[k].position.y;
+				if(config.editable){
+					config.skeleton.elems[this.i].position.x=this.original.x+this.getX();
+					config.skeleton.elems[this.i].position.y=this.original.y+this.getY();
+					
+					for(var j=0;j<config.skeleton.wires.length;j++){
+						var points=new Array();
+						if(config.skeleton.wires[j].start==config.skeleton.elems[this.i].id){
+							points[points.length]=config.skeleton.elems[this.i].position.x;
+							points[points.length]=config.skeleton.elems[this.i].position.y;
+							if(config.skeleton.wires[j].breakPoints!=null){
+								for(var k=0;k<config.skeleton.wires[j].breakPoints.length;k++){
+										points[points.length]=config.skeleton.wires[j].breakPoints[k].x;
+										points[points.length]=config.skeleton.wires[j].breakPoints[k].y;
+								}
 							}
+							for(var k=0;k<config.skeleton.elems.length;k++){
+								if(config.skeleton.elems[k].id==config.skeleton.wires[j].end){
+									points[points.length]=config.skeleton.elems[k].position.x;
+									points[points.length]=config.skeleton.elems[k].position.y;
+								}
+							}
+							
+							config.skeleton.wires[j].line.setPoints(points);
+						}
+						else if(config.skeleton.wires[j].end==config.skeleton.elems[this.i].id){
+							for(var k=0;k<config.skeleton.elems.length;k++){
+								if(config.skeleton.elems[k].id==config.skeleton.wires[j].start){
+									points[points.length]=config.skeleton.elems[k].position.x;
+									points[points.length]=config.skeleton.elems[k].position.y;
+								}
+							}
+							if(config.skeleton.wires[j].breakPoints!=null){
+								for(var k=0;k<config.skeleton.wires[j].breakPoints.length;k++){
+										points[points.length]=config.skeleton.wires[j].breakPoints[k].x;
+										points[points.length]=config.skeleton.wires[j].breakPoints[k].y;
+								}
+							}
+							points[points.length]=config.skeleton.elems[this.i].position.x;
+							points[points.length]=config.skeleton.elems[this.i].position.y;
+							config.skeleton.wires[j].line.setPoints(points);
 						}
 						
-						config.skeleton.wires[j].line.setPoints(points);
+						
 					}
-					else if(config.skeleton.wires[j].end==config.skeleton.elems[this.i].id){
-						for(var k=0;k<config.skeleton.elems.length;k++){
-							if(config.skeleton.elems[k].id==config.skeleton.wires[j].start){
-								points[points.length]=config.skeleton.elems[k].position.x;
-								points[points.length]=config.skeleton.elems[k].position.y;
-							}
-						}
-						points[points.length]=config.skeleton.elems[this.i].position.x;
-						points[points.length]=config.skeleton.elems[this.i].position.y;
-						config.skeleton.wires[j].line.setPoints(points);
-					}
-					
-					
+					wiresLayer.draw();
 				}
-				wiresLayer.draw();
 			};
 			
+			var dragmoveBreakpoint=function(){
+				if(config.editable){
+					config.skeleton.wires[this.wire].breakPoints[this.breakPoint].x=this.getX();
+					config.skeleton.wires[this.wire].breakPoints[this.breakPoint].y=this.getY();
+					var points= [];
+					var startElem;
+					var endElem;
+					for(var i=0;i<config.skeleton.elems.length;i++){
+						if(config.skeleton.elems[i].id==config.skeleton.wires[this.wire].start)startElem=config.skeleton.elems[i];
+						else if(config.skeleton.elems[i].id==config.skeleton.wires[this.wire].end)endElem=config.skeleton.elems[i];
+					}
+					
+					points[points.length]=startElem.position.x;
+					points[points.length]=startElem.position.y;
+					if(config.skeleton.wires[this.wire].breakPoints!=null){
+						for(var i=0;i<config.skeleton.wires[this.wire].breakPoints.length;i++){
+							points[points.length]=config.skeleton.wires[this.wire].breakPoints[i].x;
+							points[points.length]=config.skeleton.wires[this.wire].breakPoints[i].y;
+						}
+					}
+					points[points.length]=endElem.position.x;
+					points[points.length]=endElem.position.y;
+					config.skeleton.wires[this.wire].line.setPoints(points);
+					wiresLayer.draw();
+				}
+			};
 			
+			//breakPoints mouse over and out events
+			var dragMouseOver=function() {
+				document.body.style.cursor = 'pointer';
+				this.setStroke(style.drag.lineColor);
+				this.setStrokeWidth(style.drag.lineWidth);
+				breakPointsLayer.draw();
+			};
+			var dragMouseOut=function() {
+				document.body.style.cursor = 'default';
+				this.setStrokeWidth(0);
+				this.setStroke("");
+				breakPointsLayer.draw();
+			  
+			};
+			
+			//elems mouse over and out events
+			var dragMouseOverElems=function() {
+				document.body.style.cursor = 'pointer';
+				this.originalStroke=(this.elem.getStroke()==null)?"":this.elem.getStroke();
+				this.originalStrokeWidth=(this.elem.getStrokeWidth()==null)?0:this.elem.getStrokeWidth();
+				this.elem.setStroke(style.drag.lineColor);
+				this.elem.setStrokeWidth(style.drag.lineWidth);
+				elemsLayer.draw();
+			};
+			var dragMouseOutElems=function() {
+				document.body.style.cursor = 'default';
+				this.elem.setStrokeWidth(this.originalStrokeWidth);
+				this.elem.setStroke(this.originalStroke);
+				elemsLayer.draw();
+			  
+			};
 			//Drawing elements
 			
 			var elems=config.skeleton.elems;
@@ -378,6 +452,8 @@ BPMN={
 					group.elem=event;
 					group.i=i;
 					group.on("dragmove",dragmove);
+					group.on("mouseover",dragMouseOverElems);
+					group.on("mouseout",dragMouseOutElems);
 					
 					elemsLayer.add(group);
 				}
@@ -460,7 +536,8 @@ BPMN={
 					group.elem=gateway;
 					group.i=i;
 					group.on("dragmove",dragmove);
-					
+					group.on("mouseover",dragMouseOverElems);
+					group.on("mouseout",dragMouseOutElems);
 					elemsLayer.add(group);
 					
 				}
@@ -521,7 +598,8 @@ BPMN={
 					group.elem=activity;
 					group.i=i;
 					group.on("dragmove",dragmove);
-					
+					group.on("mouseover",dragMouseOverElems);
+					group.on("mouseout",dragMouseOutElems);
 					elemsLayer.add(group);
 				}
 			}
@@ -530,6 +608,7 @@ BPMN={
 			//drawing wires
 			var wires=config.skeleton.wires;
 			for(var i=0;i<wires.length;i++){
+				var points= new Array();
 				var wire=wires[i];
 				var startElem;
 				var endElem;
@@ -538,9 +617,40 @@ BPMN={
 					else if(elems[j].id==wire.end)endElem=elems[j];
 				}
 				
+				points[points.length]=startElem.position.x;
+				points[points.length]=startElem.position.y;
+				if(wire.breakPoints!=null){
+					for(var j=0;j<wire.breakPoints.length;j++){
+						points[points.length]=wire.breakPoints[j].x;
+						points[points.length]=wire.breakPoints[j].y;
+						
+						//drawing break point drag circle
+						// create circle
+						var breakDragger = new Kinetic.Circle({
+							x:wire.breakPoints[j].x,
+							y:wire.breakPoints[j].y,
+							radius: 10,
+							draggable:config.editable
+						});
+						breakDragger.wire=i;
+						breakDragger.breakPoint=j;
+						breakDragger.original={
+							x:wire.breakPoints[j].x,
+							y:wire.breakPoints[j].y
+						};
+						breakDragger.on('dragmove',dragmoveBreakpoint);
+						breakDragger.on('mouseover', dragMouseOver);
+						breakDragger.on('mouseout', dragMouseOut);
+						breakPointsLayer.add(breakDragger);
+						
+					}
+				}
+				points[points.length]=endElem.position.x;
+				points[points.length]=endElem.position.y;
+				
 				
 				var line1 = new Kinetic.Line({
-					points: [startElem.position.x, startElem.position.y, endElem.position.x, endElem.position.y],
+					points: points,
 					stroke: style.wire.regular.lineColor,
 					strokeWidth:style.wire.regular.lineWidth,
 					lineCap: 'round',
@@ -569,7 +679,7 @@ BPMN={
 				imageObj.src = config.logo.url;
 			}
 			
-			stage.add(poolsLayer).add(lanesLayer).add(phasesLayer).add(wiresLayer).add(elemsLayer);
+			stage.add(poolsLayer).add(lanesLayer).add(phasesLayer).add(wiresLayer).add(breakPointsLayer).add(elemsLayer);
 		}
 		else{
 			throw new Error(this.errors["containerNotExists"].replace("{0}",config.container));

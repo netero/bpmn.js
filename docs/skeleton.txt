@@ -66,6 +66,10 @@ skel1={
 				lineColor:"blue",
 				lineWidth:4
 			}
+		},
+		drag:{
+			lineColor:"#115682",
+			lineWidth:5
 		}
 	},
 	pools:[
