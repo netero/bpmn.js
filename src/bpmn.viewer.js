@@ -31,6 +31,8 @@ BPMN={
 		return -1;
 	},
 	draw:function(config){
+		//defining global drawing values
+		var radius=18;
 		//validating required elements inside config object
 		if(config.container==null || config.container=="") throw new Error(this.errors["configNullContainer"]);
 		if(config.skeleton==null)throw new Error(this.errors["configNullSkeleton"]);
@@ -316,6 +318,7 @@ BPMN={
 							config.skeleton.wires[j].line.setPoints(points);
 						}
 						else if(config.skeleton.wires[j].end==config.skeleton.elems[this.i].id){
+							var endElem=config.skeleton.elems[this.i];
 							for(var k=0;k<config.skeleton.elems.length;k++){
 								if(config.skeleton.elems[k].id==config.skeleton.wires[j].start){
 									points[points.length]=config.skeleton.elems[k].position.x;
@@ -330,6 +333,30 @@ BPMN={
 							}
 							points[points.length]=config.skeleton.elems[this.i].position.x;
 							points[points.length]=config.skeleton.elems[this.i].position.y;
+							
+							//drawing arrow
+							var slope=(points[points.length-1]-points[points.length-3])*1.0/(points[points.length-2]-points[points.length-4]);
+							//first for events end elems
+							if(endElem.type==0 || endElem.type==1 || endElem.type==2){
+								/*
+								var dx=radius*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
+								console.log(dx);
+								var dy=Math.sqrt(Math.pow(radius,2)-Math.pow(dx,2));
+								console.log(dy);
+								*/
+								var b=(endElem.position.y-slope*endElem.position.x);
+								var dx=radius*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
+								
+								var posX=endElem.position.x-dx;
+								if(!(posX>points[points.length-4] && posX<endElem.position.x)){
+									posX=endElem.position.x+dx;
+								}
+								var posY=slope*posX+b;
+								
+								config.skeleton.wires[j].arrow.setPosition({x:posX,y:posY});
+								
+							}
+							
 							config.skeleton.wires[j].line.setPoints(points);
 						}
 						
@@ -397,6 +424,9 @@ BPMN={
 				elemsLayer.draw();
 			  
 			};
+			
+			
+			
 			//Drawing elements
 			
 			var elems=config.skeleton.elems;
@@ -420,7 +450,7 @@ BPMN={
 					var event = new Kinetic.Circle({
 						x:elem.position.x,
 						y:elem.position.y,
-						radius: 18,
+						radius: radius,
 						fill: fillColor
 					});
 					
@@ -629,7 +659,7 @@ BPMN={
 						var breakDragger = new Kinetic.Circle({
 							x:wire.breakPoints[j].x,
 							y:wire.breakPoints[j].y,
-							radius: 10,
+							radius: 12,
 							draggable:config.editable
 						});
 						breakDragger.wire=i;
@@ -657,6 +687,35 @@ BPMN={
 					lineJoin: 'round'
 				});
 				config.skeleton.wires[i].line=line1;
+				
+				//drawing arrow
+				var slope=(points[points.length-1]-points[points.length-3])*1.0/(points[points.length-2]-points[points.length-4]);
+				//first for events end elems
+				if(endElem.type==0 || endElem.type==1 || endElem.type==2){
+					/*
+					var dx=radius*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
+					console.log(dx);
+					var dy=Math.sqrt(Math.pow(radius,2)-Math.pow(dx,2));
+					console.log(dy);
+					*/
+					var b=(endElem.position.y-slope*endElem.position.x);
+					var dx=radius*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
+					
+					var posX=endElem.position.x-dx;
+					if(!(posX>points[points.length-4] && posX<endElem.position.x)){
+						posX=endElem.position.x+dx;
+					}
+					var posY=slope*posX+b;
+					
+					var arrow = new Kinetic.Circle({
+						x:posX,
+						y:posY,
+						radius: 7,
+						fill:"black"
+					});
+					config.skeleton.wires[i].arrow=arrow;
+					wiresLayer.add(arrow);
+				}
 				wiresLayer.add(line1);
 				
 			}
