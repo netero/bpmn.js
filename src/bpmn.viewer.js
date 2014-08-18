@@ -165,7 +165,7 @@ BPMN={
 				  fontSize: style.pool.fontSize,
 				  fontFamily: style.pool.fontFamily,
 				  fill: style.pool.fontColor,
-				  rotation:Math.PI*-1/2
+				  rotation:-90//Math.PI*-1/2
 				});
 				
 				var poolNameRect = new Kinetic.Rect({
@@ -212,7 +212,7 @@ BPMN={
 						fontSize: style.pool.fontSize,
 						fontFamily: style.pool.fontFamily,
 						fill: style.pool.fontColor,
-						rotation:Math.PI*-1/2
+						rotation:-90//Math.PI*-1/2
 					});
 					
 					var laneNameRect = new Kinetic.Rect({
@@ -288,6 +288,123 @@ BPMN={
 				poolsLayer.add(poolNameRect);
 				
 			}
+			/*
+				Defining function for drawing arrow
+			*/
+			var drawArrow=function(endElem,points){
+				var slope=(points[points.length-1]-points[points.length-3])*1.0/(points[points.length-2]-points[points.length-4]);
+				var slope2=-1.0*(1/slope);
+				var b=(Math.abs(slope)!=Infinity)?endElem.position.y-slope*endElem.position.x:endElem.position.y;
+				var deltaXCircle=function (radius,slope){
+					return radius*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
+				};
+				var dx;
+				var dx2;
+				var dx3;
+				//first for events end elems
+				if(endElem.type==0 || endElem.type==1 || endElem.type==2){
+					dx=deltaXCircle(radius,slope);
+				}
+				else if(endElem.type==3 || endElem.type==4){
+					var width=endElem.width;
+					var height=endElem.height;
+					var dxi=width/2;
+					var dyi=height/2;
+					var c1=dxi/Math.cos(Math.atan(Math.abs(slope)));
+					var c2=dyi/Math.sin(Math.atan(Math.abs(slope)));
+					if(c1<=c2){
+						dx=dxi;
+					}
+					else{
+						dx=deltaXCircle(c2,slope);
+					}
+				}
+				
+				dx2=deltaXCircle(15,slope);
+				dx3=deltaXCircle(10,slope2);
+				
+				var posX;
+				var posY;
+				var posX2;
+				var posY2;
+				var posX3;
+				var posY3;
+				var posX4;
+				var posY4;
+				
+				if(slope==Infinity){
+					posX=endElem.position.x;
+					posY=endElem.position.y-endElem.height/2;
+					posX2=posX+10;
+					posY2=posY-15;
+					posX3=posX-10;
+					posY3=posY-15;
+				}
+				else if(slope==-Infinity){
+					posX=endElem.position.x;
+					posY=endElem.position.y+endElem.height/2;
+					posX2=posX+10;
+					posY2=posY+15;
+					posX3=posX-10;
+					posY3=posY+15;
+				}
+				else if(slope2==Infinity){
+					posX=endElem.position.x+dx;
+					posY=endElem.position.y;
+					posX2=posX+15;
+					posY2=posY+10;
+					posX3=posX+15;
+					posY3=posY-10;
+				}
+				else if(slope2==-Infinity){
+					posX=endElem.position.x-dx;
+					posY=endElem.position.y;
+					posX2=posX-15;
+					posY2=posY+10;
+					posX3=posX-15;
+					posY3=posY-10;
+				}
+				else{
+					posX=endElem.position.x-dx;
+					if(!((posX>points[points.length-4] && posX<endElem.position.x) || (posX>endElem.position.x && posX<points[points.length-4]))){
+						posX=endElem.position.x+dx;
+					}
+					posY=slope*posX+b;
+					posX4=posX-dx2;
+					if(!((posX4>points[points.length-4] && posX4<posX) || (posX4>posX && posX4<points[points.length-4]))){
+						posX4=posX+dx2;
+					}
+					posY4=slope*posX4+b;
+					
+					var b2=posY4-slope2*posX4;
+					
+					posX2=posX4-dx3;
+					posY2=slope2*posX2+b2;
+					
+					posX3=posX4+dx3;
+					posY3=slope2*posX3+b2;
+				}
+				var arrow=new Kinetic.Shape({
+					sceneFunc: function(context) {
+						context.beginPath();
+						context.moveTo(this.posX, this.posY);
+						context.lineTo(this.posX2, this.posY2);
+						context.lineTo(this.posX3, this.posY3);
+						context.lineTo(this.posX, this.posY);
+						context.closePath();
+						// KineticJS specific context method
+						context.fillShape(this);
+					},
+					fill: 'black'
+				});
+				arrow.posX=posX;
+				arrow.posY=posY;
+				arrow.posX2=posX2;
+				arrow.posY2=posY2;
+				arrow.posX3=posX3;
+				arrow.posY3=posY3;
+				return arrow;
+			};
 			
 			/*
 				Defining function for dragging elements
@@ -341,61 +458,16 @@ BPMN={
 						}
 						
 						//drawing arrow
-						
-						//first for events end elems
-						if(endElem!=null && (endElem.type==0 || endElem.type==1 || endElem.type==2)){
-							/*
-							var dx=radius*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
-							console.log(dx);
-							var dy=Math.sqrt(Math.pow(radius,2)-Math.pow(dx,2));
-							console.log(dy);
-							*/
-							var b=(endElem.position.y-slope*endElem.position.x);
-							var dx=radius*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
+						if(endElem!=null){
 							
-							var posX=endElem.position.x-dx;
-							if(!(posX>points[points.length-4] && posX<endElem.position.x)){
-								posX=endElem.position.x+dx;
-							}
-							var posY=slope*posX+b;
-							
-							var dx2=15*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
-							var posX4=posX-dx2;
-							if(!(posX4>points[points.length-4] && posX4<posX)){
-								posX4=posX+dx2;
-							}
-							var posY4=slope*posX4+b;
-							
-							var slope2=-1.0*(1/slope);
-					
-							var b2=posY4-slope2*posX4;
-							
-							var dx3=10*1.0*Math.sqrt(Math.pow(slope2,2)+1)/(Math.pow(slope2,2)+1);
-							
-							var posX2=posX4-dx3;
-							var posY2=slope2*posX2+b2;
-							
-							var posX3=posX4+dx3;
-							var posY3=slope2*posX3+b2;
 							
 							config.skeleton.wires[j].arrow.destroy();
 							
-							config.skeleton.wires[j].arrow=new Kinetic.Shape({
-								sceneFunc: function(context) {
-									context.beginPath();
-									context.moveTo(posX, posY);
-									context.lineTo(posX2, posY2);
-									context.lineTo(posX3, posY3);
-									context.lineTo(posX, posY);
-									context.closePath();
-									// KineticJS specific context method
-									context.fillShape(this);
-								},
-								fill: 'black'
-							});
+							config.skeleton.wires[j].arrow=drawArrow(endElem,points);
 							
 							wiresLayer.add(config.skeleton.wires[j].arrow);
 						}
+						
 					}
 					wiresLayer.draw();
 				}
@@ -424,6 +496,12 @@ BPMN={
 					points[points.length]=endElem.position.x;
 					points[points.length]=endElem.position.y;
 					config.skeleton.wires[this.wire].line.setPoints(points);
+					//drawing arrow
+					if(endElem!=null){
+						config.skeleton.wires[this.wire].arrow.destroy();
+						config.skeleton.wires[this.wire].arrow=drawArrow(endElem,points);
+						wiresLayer.add(config.skeleton.wires[this.wire].arrow);
+					}
 					wiresLayer.draw();
 				}
 			};
@@ -519,7 +597,8 @@ BPMN={
 					group.on("dragmove",dragmove);
 					group.on("mouseover",dragMouseOverElems);
 					group.on("mouseout",dragMouseOutElems);
-					
+					config.skeleton.elems[i].width=event.getWidth();
+					config.skeleton.elems[i].height=event.getHeight();
 					elemsLayer.add(group);
 				}
 				
@@ -534,7 +613,7 @@ BPMN={
 						width: squareWidth,
 						height: squareWidth,
 						fill: gatewaysColor,
-						rotation:Math.PI*1/4
+						rotation:45//Math.PI*1/4
 					});
 					gateway.move({x:squareWidth/2,y:(squareWidth/2)-(squareWidth*Math.sqrt(2)/2)});
 					var gatewayName=new Kinetic.Text({
@@ -603,6 +682,8 @@ BPMN={
 					group.on("dragmove",dragmove);
 					group.on("mouseover",dragMouseOverElems);
 					group.on("mouseout",dragMouseOutElems);
+					config.skeleton.elems[i].width=gateway.getWidth();
+					config.skeleton.elems[i].height=gateway.getHeight();
 					elemsLayer.add(group);
 					
 				}
@@ -660,8 +741,11 @@ BPMN={
 						x:elem.position.x,
 						y:elem.position.y
 					};
+					
 					group.elem=activity;
 					group.i=i;
+					config.skeleton.elems[i].width=activity.getWidth();
+					config.skeleton.elems[i].height=activity.getHeight();
 					group.on("dragmove",dragmove);
 					group.on("mouseover",dragMouseOverElems);
 					group.on("mouseout",dragMouseOutElems);
@@ -724,55 +808,9 @@ BPMN={
 				config.skeleton.wires[i].line=line1;
 				
 				//drawing arrow
-				var slope=(points[points.length-1]-points[points.length-3])*1.0/(points[points.length-2]-points[points.length-4]);
-				//first for events end elems
-				if(endElem.type==0 || endElem.type==1 || endElem.type==2){
-					var b=(endElem.position.y-slope*endElem.position.x);
-					var dx=radius*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
-					
-					var posX=endElem.position.x-dx;
-					if(!(posX>points[points.length-4] && posX<endElem.position.x)){
-						posX=endElem.position.x+dx;
-					}
-					var posY=slope*posX+b;
-					
-					var dx2=15*1.0*Math.sqrt(Math.pow(slope,2)+1)/(Math.pow(slope,2)+1);
-					var posX4=posX-dx2;
-					if(!(posX4>points[points.length-4] && posX4<posX)){
-						posX4=posX+dx2;
-					}
-					var posY4=slope*posX4+b;
-					
-					
-					var slope2=-1.0*(1/slope);
-					
-					var b2=posY4-slope2*posX4;
-					
-					var dx3=10*1.0*Math.sqrt(Math.pow(slope2,2)+1)/(Math.pow(slope2,2)+1);
-					
-					var posX2=posX4-dx3;
-					var posY2=slope2*posX2+b2;
-					
-					var posX3=posX4+dx3;
-					var posY3=slope2*posX3+b2;
-					
-					var arrow=new Kinetic.Shape({
-						sceneFunc: function(context) {
-							context.beginPath();
-							context.moveTo(posX, posY);
-							context.lineTo(posX2, posY2);
-							context.lineTo(posX3, posY3);
-							context.lineTo(posX, posY);
-							context.closePath();
-							// KineticJS specific context method
-							context.fillShape(this);
-						},
-						fill: 'black'
-					});
-					
-					config.skeleton.wires[i].arrow=arrow;
-					wiresLayer.add(arrow);
-				}
+				config.skeleton.wires[i].arrow=drawArrow(endElem,points);
+				wiresLayer.add(config.skeleton.wires[i].arrow);
+				
 				wiresLayer.add(line1);
 				
 			}
