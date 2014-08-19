@@ -288,10 +288,22 @@ BPMN={
 				poolsLayer.add(poolNameRect);
 				
 			}
+			var findPathWire=function(idWire,path){
+				for(var i=0;i<path.wires.length;i++){
+					if(path.wires[i].id==idWire)return path.wires[i];
+				}
+				return null;
+			};
+			var findPathElem=function(idElem,path){
+				for(var i=0;i<path.elems.length;i++){
+					if(path.elems[i].id==idElem)return path.elems[i];
+				}
+				return null;
+			};
 			/*
 				Defining function for drawing arrow
 			*/
-			var drawArrow=function(endElem,points){
+			var drawArrow=function(endElem,points,wireStrokeColor){
 				var slope=(points[points.length-1]-points[points.length-3])*1.0/(points[points.length-2]-points[points.length-4]);
 				var slope2=-1.0*(1/slope);
 				var b=(Math.abs(slope)!=Infinity)?endElem.position.y-slope*endElem.position.x:endElem.position.y;
@@ -426,10 +438,9 @@ BPMN={
 						context.lineTo(this.posX3, this.posY3);
 						context.lineTo(this.posX, this.posY);
 						context.closePath();
-						// KineticJS specific context method
 						context.fillShape(this);
 					},
-					fill: 'black'
+					fill: wireStrokeColor
 				});
 				arrow.posX=posX;
 				arrow.posY=posY;
@@ -490,14 +501,16 @@ BPMN={
 							slope=(points[points.length-1]-points[points.length-3])*1.0/(points[points.length-2]-points[points.length-4]);
 							config.skeleton.wires[j].line.setPoints(points);
 						}
-						
+						else{
+							endElem=null;
+						}
 						//drawing arrow
 						if(endElem!=null){
 							
 							
 							config.skeleton.wires[j].arrow.destroy();
 							
-							config.skeleton.wires[j].arrow=drawArrow(endElem,points);
+							config.skeleton.wires[j].arrow=drawArrow(endElem,points,config.skeleton.wires[j].lineStrokeColor);
 							
 							wiresLayer.add(config.skeleton.wires[j].arrow);
 						}
@@ -533,7 +546,7 @@ BPMN={
 					//drawing arrow
 					if(endElem!=null){
 						config.skeleton.wires[this.wire].arrow.destroy();
-						config.skeleton.wires[this.wire].arrow=drawArrow(endElem,points);
+						config.skeleton.wires[this.wire].arrow=drawArrow(endElem,points,config.skeleton.wires[this.wire].lineStrokeColor);
 						wiresLayer.add(config.skeleton.wires[this.wire].arrow);
 					}
 					wiresLayer.draw();
@@ -582,6 +595,14 @@ BPMN={
 			for(var i =0;i<elems.length;i++){
 				var elem=elems[i];
 				var elemType=this.elemTypes[elem.type];
+				//default color for stroke elements
+				var elemStrokeColor=style.activity.colorStatus.notOpen;
+				
+				if(config.showPaintedPath && config.path!=null){
+					var elemPath=findPathElem(elem.id,config.path);
+					if(elemPath!=null)elemStrokeColor=style.activity.colorStatus[elemPath.state];
+				}
+				
 				if(elem.id==null || elem.id=="")throw new Error(this.errors["elemIdNotValid"].replace("{0}",i));
 				if(elemType==null)throw new Error(this.errors["elemTypeNotValid"].replace("{0}",elem.id));
 				
@@ -598,7 +619,9 @@ BPMN={
 						x:elem.position.x,
 						y:elem.position.y,
 						radius: radius,
-						fill: fillColor
+						fill: fillColor,
+						stroke: elemStrokeColor, 
+						strokeWidth: style.activity.borderWidth
 					});
 					
 					var eventName=new Kinetic.Text({
@@ -647,7 +670,9 @@ BPMN={
 						width: squareWidth,
 						height: squareWidth,
 						fill: gatewaysColor,
-						rotation:45//Math.PI*1/4
+						rotation:45,//Math.PI*1/4
+						stroke: elemStrokeColor, 
+						strokeWidth: style.activity.borderWidth
 					});
 					gateway.move({x:squareWidth/2,y:(squareWidth/2)-(squareWidth*Math.sqrt(2)/2)});
 					var gatewayName=new Kinetic.Text({
@@ -753,7 +778,7 @@ BPMN={
 						width: (5.0*tempText.getWidth()/4.0),
 						height: (5.0*tempText.getHeight()/3.0),
 						fill: style.activity.background,
-						stroke: style.activity.colorStatus.notOpen, 
+						stroke: elemStrokeColor, 
 						strokeWidth: style.activity.borderWidth,
 						cornerRadius:style.activity.borderRadious
 					});
@@ -793,6 +818,19 @@ BPMN={
 			for(var i=0;i<wires.length;i++){
 				var points= new Array();
 				var wire=wires[i];
+				
+				//default color for stroke elements
+				var wireStrokeColor=style.wire.regular.lineColor;
+				var wireLineWidth=style.wire.regular.lineWidth;
+				
+				if(config.showPaintedPath && config.path!=null){
+					var wirePath=findPathWire(wire.id,config.path);
+					if(wirePath!=null){
+						wireStrokeColor=style.wire.closed.lineColor;
+						wireLineWidth=style.wire.closed.lineWidth;
+					}
+				}
+				
 				var startElem;
 				var endElem;
 				for(var j=0;j<elems.length;j++){
@@ -834,15 +872,16 @@ BPMN={
 				
 				var line1 = new Kinetic.Line({
 					points: points,
-					stroke: style.wire.regular.lineColor,
-					strokeWidth:style.wire.regular.lineWidth,
+					stroke: wireStrokeColor,
+					strokeWidth:wireLineWidth,
 					lineCap: 'round',
 					lineJoin: 'round'
 				});
 				config.skeleton.wires[i].line=line1;
 				
 				//drawing arrow
-				config.skeleton.wires[i].arrow=drawArrow(endElem,points);
+				wire.lineStrokeColor=wireStrokeColor;
+				config.skeleton.wires[i].arrow=drawArrow(endElem,points,wire.lineStrokeColor);
 				wiresLayer.add(config.skeleton.wires[i].arrow);
 				
 				wiresLayer.add(line1);

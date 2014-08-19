@@ -1,13 +1,34 @@
 Path
 ================================
 
-It is an array of id of elements. It describes which elements and wires are closed. 
+It is an array of elements id, wires id, and its states. It describes which elements and wires are closed and pending. 
+
+Elements states
+===============
+	closed
+	notOpen
+	open
+	delayed
+	expireSoon
+
 
 Example
 ================================
 
-path=[
-	1,
-	2,
-	3
-];
+path={
+	elems:[
+		{
+			id:1,
+			state:"closed"
+		},
+		{
+			id:2,
+			state:"open"
+		}
+	],
+	wires:[
+		{
+			id:1
+		}
+	]
+};

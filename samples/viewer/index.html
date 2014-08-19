@@ -14,6 +14,7 @@
 					height:100,
 					editable:true,
 					showLogo:true,
+					showPaintedPath:true,
 					textMargin:10,
 					skeleton:{
 						width:1920,
@@ -99,7 +100,7 @@
 							{
 								id:2,
 								name:"Say Hello World! Once, Twice, Three times.",
-								type:5,
+								type:4,
 								position:{
 									x:500,
 									y:300
@@ -138,7 +139,23 @@
 							}
 						]
 					},
-					path:null
+					path:{
+						elems:[
+							{
+								id:1,
+								state:"closed"
+							},
+							{
+								id:2,
+								state:"open"
+							}
+						],
+						wires:[
+							{
+								id:1
+							}
+						]
+					}
 				});
 			}
 		</script>
