@@ -319,7 +319,44 @@ BPMN={
 						dx=deltaXCircle(c2,slope);
 					}
 				}
-				
+				else if(endElem.type==5 || endElem.type==6 || endElem.type==7){
+					
+					var z=endElem.width/2;
+					var point1={};
+					var point2={};
+					if(points[points.length-4]<points[points.length-2] && points[points.length-3]<points[points.length-1])
+					{
+						point1.x=endElem.position.x;
+						point1.y=endElem.position.y-z;
+						
+						point2.x=endElem.position.x-z;
+						point2.y=endElem.position.y;
+					}
+					else if(points[points.length-4]<points[points.length-2] && points[points.length-3]>points[points.length-1]){
+						point1.x=endElem.position.x-z;
+						point1.y=endElem.position.y;
+						
+						point2.x=endElem.position.x;
+						point2.y=endElem.position.y+z;
+					}
+					else if(points[points.length-4]>points[points.length-2] && points[points.length-3]<points[points.length-1]){
+						point1.x=endElem.position.x;
+						point1.y=endElem.position.y-z;
+						
+						point2.x=endElem.position.x+z;
+						point2.y=endElem.position.y;
+					}
+					else{
+						point1.x=endElem.position.x+z;
+						point1.y=endElem.position.y;
+						
+						point2.x=endElem.position.x;
+						point2.y=endElem.position.y+z;
+					}
+					var slopeGate=(point2.y-point1.y)/(point2.x-point1.x);
+					dx=((point1.y-b-slopeGate*point1.x)/(slope-slopeGate))-endElem.position.x;
+					
+				}
 				dx2=deltaXCircle(15,slope);
 				dx3=deltaXCircle(10,slope2);
 				
@@ -375,12 +412,9 @@ BPMN={
 						posX4=posX+dx2;
 					}
 					posY4=slope*posX4+b;
-					
 					var b2=posY4-slope2*posX4;
-					
 					posX2=posX4-dx3;
 					posY2=slope2*posX2+b2;
-					
 					posX3=posX4+dx3;
 					posY3=slope2*posX3+b2;
 				}
@@ -682,8 +716,8 @@ BPMN={
 					group.on("dragmove",dragmove);
 					group.on("mouseover",dragMouseOverElems);
 					group.on("mouseout",dragMouseOutElems);
-					config.skeleton.elems[i].width=gateway.getWidth();
-					config.skeleton.elems[i].height=gateway.getHeight();
+					config.skeleton.elems[i].width=squareWidth*Math.sqrt(2);
+					config.skeleton.elems[i].height=squareWidth*Math.sqrt(2);
 					elemsLayer.add(group);
 					
 				}
